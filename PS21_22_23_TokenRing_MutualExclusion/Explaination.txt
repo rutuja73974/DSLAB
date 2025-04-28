@@ -1,0 +1,219 @@
+Token Ring Based Mutual Exclusion Algorithm
+
+1. What does this algorithm do?
+
+The Token Ring Mutual Exclusion algorithm is a way to ensure that only one machine (or process) enters its Critical Section (CS) at a time.
+
+A unique token is passed around the ring of machines. Only the machine that has the token is allowed to enter its CS.
+
+After exiting the CS, it passes the token to the next machine in the logical ring.
+
+2. Why is it used?
+
+To achieve mutual exclusion in distributed systems without centralized control.
+
+Ensures no two processes are inside the CS at the same time.
+
+Efficient: No repeated checking; only need to wait for token.
+
+Fair: Token moves in a logical order, preventing starvation.
+
+3. Step-by-Step Explanation of the Code (TokenRing.java)
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+Import required packages for networking (Socket, ServerSocket), input/output, and utilities.
+
+public class TokenRing {
+
+Main class named TokenRing.
+
+    static boolean hasToken = false;
+    static int myID, myPort, nextPort;
+    static String myIP, nextIP;
+
+hasToken: Does this machine currently have the token?
+
+myID: ID of this machine (0 or 1).
+
+myIP, myPort: IP address and port of this machine.
+
+nextIP, nextPort: IP and port of the next machine in the ring.
+
+    public static void main(String args[]) throws Exception {
+        Scanner sc = new Scanner(System.in);
+
+Start of the main program and scanner for user input.
+
+        System.out.print("Enter My ID (0 or 1): ");
+        myID = sc.nextInt();
+        sc.nextLine();
+
+Read machine ID (either 0 or 1).
+
+        System.out.print("Enter My IP: ");
+        myIP = sc.nextLine();
+        System.out.print("Enter My Port: ");
+        myPort = sc.nextInt();
+        sc.nextLine();
+
+Read own IP and Port number.
+
+        System.out.print("Enter Next Machine's IP: ");
+        nextIP = sc.nextLine();
+        System.out.print("Enter Next Machine's Port: ");
+        nextPort = sc.nextInt();
+        sc.nextLine();
+
+Read next machine's IP and port in the ring.
+
+        System.out.print("Do you initially have the token? (yes/no): ");
+        String ans = sc.nextLine();
+        hasToken = ans.equalsIgnoreCase("yes");
+
+Check if this machine starts with the token.
+
+        new Thread(() -> {
+            try {
+                receiveToken();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+Start a new thread to keep listening for the token from other machines.
+
+        while (true) {
+            if (hasToken) {
+                System.out.println("Entering Critical Section...");
+                Thread.sleep(3000);  // Simulate doing work
+                System.out.println("Exiting Critical Section...");
+                hasToken = false;
+                sendToken();
+            }
+            Thread.sleep(1000);
+        }
+    }
+
+If this machine has the token:
+
+Enter Critical Section
+
+Simulate work
+
+Exit Critical Section
+
+Send the token to the next machine
+
+Otherwise, wait for the token.
+
+    static void sendToken() throws Exception {
+        Socket socket = new Socket(nextIP, nextPort);
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+        dos.writeUTF("token");
+        dos.close();
+        socket.close();
+    }
+
+Send the token to the next machine's IP and Port.
+
+    static void receiveToken() throws Exception {
+        ServerSocket server = new ServerSocket(myPort);
+        while (true) {
+            Socket socket = server.accept();
+            DataInputStream dis = new DataInputStream(socket.getInputStream());
+            String msg = dis.readUTF();
+            if (msg.equals("token")) {
+                hasToken = true;
+            }
+            dis.close();
+            socket.close();
+        }
+    }
+}
+
+Listen for incoming token messages.
+
+If "token" received, set hasToken = true.
+
+Ready to enter critical section.
+
+4. Steps to Run the Program
+
+Save the file as TokenRing.java.
+
+Open two terminals.
+
+Compile the program:
+
+javac TokenRing.java
+
+In Terminal 1:
+
+java TokenRing
+
+Enter:
+
+My ID: 1
+
+My IP: 127.0.0.1
+
+My Port: 6000
+
+Next IP: 127.0.0.1
+
+Next Port: 5000
+
+Initially have token: no
+
+In Terminal 2:
+
+java TokenRing
+
+Enter:
+
+My ID: 0
+
+My IP: 127.0.0.1
+
+My Port: 5000
+
+Next IP: 127.0.0.1
+
+Next Port: 6000
+
+Initially have token: yes
+
+Important: Start Terminal 1 first (receiver first), then Terminal 2.
+
+5. How Output is Gained
+
+Machine with the token enters critical section.
+
+After work, it sends the token to the next machine.
+
+The next machine receives token and enters CS.
+
+This keeps happening in a cyclic manner.
+
+Sample Output:
+
+[Machine 0]
+Entering Critical Section...
+Exiting Critical Section...
+Waiting for token...
+
+[Machine 1]
+Received token!
+Entering Critical Section...
+Exiting Critical Section...
+Waiting for token...
+
+[Machine 0]
+Received token!
+Entering Critical Section...
+...
+
+Thus, Mutual Exclusion is maintained. Only one machine is in Critical Section at a time!

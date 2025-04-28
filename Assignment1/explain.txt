@@ -1,0 +1,94 @@
+1. What is RMI in Java?
+Answer:
+RMI (Remote Method Invocation) is a Java API that allows an object running on one machine (client) to invoke methods on an object running on another machine (server).
+
+2. Why do we use RMI instead of traditional socket programming?
+Answer:
+RMI is easier than socket programming because it handles the lower-level network communication details for us. It allows direct method calls on remote objects, just like calling a local method.
+
+3. What is the purpose of rmiregistry?
+Answer:
+rmiregistry is a simple name service that allows clients to look up remote objects by name. It holds a reference to the remote object stub.
+
+4. What are the major steps to create an RMI application?
+Answer:
+
+Define a remote interface.
+
+Implement the remote interface.
+
+Create a server to bind the remote object to rmiregistry.
+
+Create a client to look up and invoke methods on the remote object.
+
+Start rmiregistry before running the server.
+
+5. What is a stub and a skeleton in RMI?
+Answer:
+
+Stub: It acts as a proxy on the client side, forwarding the request to the remote object.
+
+Skeleton: (In old Java versions) it was used on the server side to dispatch method calls to the actual object. In new versions, it's handled internally.
+
+6. Explain the flow of your RMI program briefly.
+Answer:
+The client uses Naming.lookup() to find the remote object in the rmiregistry. Then it calls methods like addition(), palindrome(), etc., which are executed on the server side, and results are sent back to the client.
+
+7. How is multi-threading achieved in your RMI server?
+Answer:
+RMI server is inherently multi-threaded. When multiple clients call the server methods, the RMI runtime automatically creates a separate thread for each remote method invocation.
+
+--------------------------------------
+about code
+Code Flow Explanation:
+1. Remote Interface (ServerIntf)
+You create an interface ServerIntf that extends Remote.
+
+It declares methods like:
+
+addition(), substraction(), palindrome(), isequalstring(), celsiusToFahrenheit(), milesToKilometer(), etc.
+
+All methods must throw RemoteException.
+
+✅ Purpose: It acts like a contract between server and client, defining what remote operations are available.
+
+2. Server Implementation (ServerImpl)
+You implement the ServerIntf in a class ServerImpl.
+
+All the methods are coded here, e.g.:
+
+Addition returns a + b.
+
+Palindrome checks if a string reads the same backward.
+
+isequalstring compares two strings, etc.
+
+ServerImpl extends UnicastRemoteObject to make the object available for remote calls.
+
+✅ Purpose: It actually performs the work for every remote method call from clients.
+
+3. Server Program (Server)
+You create and bind the server object to rmiregistry using:
+
+
+Naming.rebind("Server", new ServerImpl());
+The name "Server" is used by the client to find it.
+
+✅ Purpose: Registers the server object with a name so clients can look it up.
+
+4. Client Program (Client)
+The client first connects to the server:
+
+ServerIntf serverIntf = (ServerIntf) Naming.lookup("rmi://localhost/Server");
+Then it asks the user to input numbers and strings (using Scanner).
+
+Then it calls different methods on serverIntf, like:
+
+serverIntf.addition(a, b),
+
+serverIntf.palindrome(str1), etc.
+
+Server executes the methods and sends the results back to the client.
+
+✅ Purpose: Acts as the user side, sending input and receiving output.
+

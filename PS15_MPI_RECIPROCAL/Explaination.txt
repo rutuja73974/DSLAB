@@ -1,0 +1,118 @@
+MPI Overview:
+
+MPI (Message Passing Interface) is a standardized and portable message-passing system designed to allow multiple computers (processes) to communicate with each other when running parallel programs. It is mainly used in High Performance Computing (HPC) to perform computations faster by dividing tasks among multiple processors or machines.
+
+Key Features:
+
+Enables parallel programming.
+
+Supports communication (send, receive, broadcast, scatter, gather, etc.) between processes.
+
+Works across distributed systems (clusters, supercomputers).
+
+Use of this Program:
+
+This program demonstrates scattering an array of numbers across processes.
+
+Each process calculates the reciprocal (1/x) of the number it receives.
+
+Then it gathers the results back to the root process.
+
+It shows how work can be divided among processes and collected back efficiently.
+
+Step-by-Step Explanation of Code:
+
+Import mpi package:
+
+import mpi.*;
+
+Required to use MPI classes and methods.
+
+Initialize MPI:
+
+MPI.Init(args);
+
+This initializes the MPI execution environment.
+
+Get Rank and Size:
+
+int r = MPI.COMM_WORLD.Rank();
+int s = MPI.COMM_WORLD.Size();
+
+r: Process ID (0,1,2,...)
+
+s: Total number of processes.
+
+Declare Buffers:
+
+double[] send = new double[s];
+double[] recv = new double[1];
+double[] res = new double[s];
+
+send: array of numbers initialized by root.
+
+recv: each process receives 1 number.
+
+res: stores reciprocals collected back at root.
+
+Root initializes array:
+
+if (r == 0) {
+    for (int i = 0; i < s; i++) send[i] = i + 1;
+}
+
+Only root process (rank 0) fills the array.
+
+Scatter data:
+
+MPI.COMM_WORLD.Scatter(send, 0, 1, MPI.DOUBLE, recv, 0, 1, MPI.DOUBLE, 0);
+
+Each process gets one element from send.
+
+Calculate Reciprocal:
+
+recv[0] = 1.0 / recv[0];
+
+Each process calculates the reciprocal of the number it received.
+
+Gather data back:
+
+MPI.COMM_WORLD.Gather(recv, 0, 1, MPI.DOUBLE, res, 0, 1, MPI.DOUBLE, 0);
+
+Each process sends its result back to root.
+
+Print Result (Root Only):
+
+if (r == 0) {
+    for (int i = 0; i < s; i++) System.out.println(res[i]);
+}
+
+Root prints all the reciprocals collected.
+
+Finalize MPI:
+
+MPI.Finalize();
+
+Ends the MPI environment.
+
+Sample Output:
+
+If size = 4 (4 processes), Output will be:
+
+1.0
+0.5
+0.3333333333333333
+0.25
+
+Explanation of Output:
+
+Process 0 received 1, reciprocal = 1/1 = 1.0
+
+Process 1 received 2, reciprocal = 1/2 = 0.5
+
+Process 2 received 3, reciprocal = 1/3 = 0.333...
+
+Process 3 received 4, reciprocal = 1/4 = 0.25
+
+Thus, all reciprocals are printed at the end.
+

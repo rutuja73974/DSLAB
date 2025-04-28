@@ -1,0 +1,73 @@
+**Explanation of the Program:**
+
+This Java program uses **MPI (Message Passing Interface)** to perform distributed computation across multiple processes. Here, the operation performed is the **calculation of a product** of numbers in a distributed fashion.
+
+---
+
+**What is MPI?**
+- MPI stands for **Message Passing Interface**.
+- It is a standardized and portable message-passing system designed to allow processes to communicate with each other in a parallel computing environment.
+- MPI helps in building applications that can run on multiple processors or machines, thus improving performance by parallelizing tasks.
+
+**Why do we use MPI in this program?**
+- To **divide the workload** of multiplying numbers among multiple processes instead of a single process doing all the work.
+- Each process computes the product of a subset of numbers.
+- Finally, these intermediate products are gathered and multiplied together to get the **final product**.
+- It demonstrates **distributed computing** concepts like **Scatter**, **Gather**, and **parallel processing**, which are important for improving efficiency in large-scale computations.
+
+---
+
+**Step-by-step Code Explanation:**
+
+1. **Import MPI Library:**
+   - `import mpi.*;` imports necessary classes from the MPJ Express MPI package.
+
+2. **MPI Initialization:**
+   - `MPI.Init(args);` initializes the MPI environment.
+   - `rank = MPI.COMM_WORLD.Rank();` fetches the rank (ID) of each process.
+   - `size = MPI.COMM_WORLD.Size();` fetches the total number of processes.
+
+3. **Variable Setup:**
+   - `unitsize = 5;` means each process will handle 5 elements.
+   - Arrays `sendBuffer`, `receiveBuffer`, and `gatherBuffer` are created to manage data distribution and collection.
+
+4. **Root Process Data Initialization:**
+   - Only the root process (rank 0) initializes `sendBuffer` with consecutive numbers (1 to total elements).
+   - It prints all the initialized elements.
+
+5. **Data Distribution using Scatter:**
+   - `MPI.COMM_WORLD.Scatter()` divides the `sendBuffer` array into parts and sends one part to each process, storing it into `receiveBuffer`.
+
+6. **Local Computation (Partial Product Calculation):**
+   - Each process computes the product of numbers in its `receiveBuffer`.
+   - It prints its intermediate product.
+
+7. **Gather Local Results to Root Process:**
+   - `MPI.COMM_WORLD.Gather()` collects all intermediate products from all processes into `gatherBuffer` at the root process.
+
+8. **Final Computation at Root Process:**
+   - Root process multiplies all received intermediate products to find the final product.
+   - It prints the final product.
+
+9. **Finalize MPI Environment:**
+   - `MPI.Finalize();` gracefully shuts down the MPI environment after the computation.
+
+---
+
+**Example Output:** (Suppose 4 processes and unitsize = 5)
+
+- Root process (0) initializes numbers from 1 to 20.
+- Each process gets 5 numbers.
+- Each process computes the product of its 5 numbers.
+- Root gathers all 4 intermediate products and multiplies them together to get the final product.
+
+---
+
+**In short:**
+- **MPI is used** here to distribute the multiplication task among multiple processes.
+- **Result:** Efficient calculation of large products by parallel computation.
+
+---
+
+**End of Explanation** ✅
+

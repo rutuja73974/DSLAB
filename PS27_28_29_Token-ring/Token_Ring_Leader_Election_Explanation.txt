@@ -1,0 +1,75 @@
+
+Leader Election using Token Ring Algorithm in Java
+
+1. What the program is:
+   - This program simulates how multiple processes in a ring (like Process 0 → Process 1 → Process 2 → etc.) elect a leader.
+   - Every process has a unique ID.
+   - The goal is to find the process with the highest ID and make it the leader using Token Ring Election.
+
+2. How it works:
+   - Process 0 starts the election with its own ID.
+   - The token (message) is passed around, and each process compares its ID to the token.
+   - If the current process's ID is greater, it updates the token with its own ID.
+   - If it's smaller, it just forwards the token.
+   - The token eventually returns to Process 0, and the highest ID in the token is declared as the leader.
+
+3. Code Explanation:
+   - We define the IDs of processes.
+   - Process 0 starts the election with its own ID and sends the token to Process 1.
+   - The loop continues where each process checks if its ID is greater than the current token, replacing it if necessary.
+   - The token is sent back to Process 0, where the leader is identified.
+
+   Java Code:
+
+   public class Main {
+       public static void main(String[] args) {
+           int[] ids = {4, 2, 8, 6, 1}; // IDs of processes
+           int n = ids.length;
+           int token = ids[0]; // Process 0 starts election with its ID
+
+           System.out.println("Process 0 starts election with token: " + token);
+
+           for (int i = 1; i < n; i++) {
+               System.out.println("Token (" + token + ") sent from Process " + (i - 1) + " to Process " + i);
+
+               if (ids[i] > token) {
+                   System.out.println("Process " + i + " replaces token with its ID: " + ids[i]);
+                   token = ids[i];
+               } else {
+                   System.out.println("Process " + i + " forwards token: " + token);
+               }
+           }
+
+           // Last process sends back to Process 0
+           System.out.println("Token (" + token + ") sent from Process " + (n - 1) + " to Process 0");
+
+           if (ids[0] > token) {
+               System.out.println("Process 0 replaces token with its ID: " + ids[0]);
+               token = ids[0];
+           } else {
+               System.out.println("Process 0 recognizes leader as: " + token);
+           }
+
+           System.out.println("\nLeader elected is Process with ID: " + token);
+       }
+   }
+
+4. Sample Output:
+
+   Process 0 starts election with token: 4
+   Token (4) sent from Process 0 to Process 1
+   Process 1 forwards token: 4
+   Token (4) sent from Process 1 to Process 2
+   Process 2 replaces token with its ID: 8
+   Token (8) sent from Process 2 to Process 3
+   Process 3 forwards token: 8
+   Token (8) sent from Process 3 to Process 4
+   Process 4 forwards token: 8
+   Token (8) sent from Process 4 to Process 0
+   Process 0 recognizes leader as: 8
+
+   Leader elected is Process with ID: 8
+
+Step-by-Step Process Explanation:
+
+- Start election → pass token → update if you have bigger ID → pass again → finally, announce the biggest ID as leader.

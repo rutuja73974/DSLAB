@@ -1,0 +1,209 @@
+What is Berkeley Algorithm?
+
+Berkeley Algorithm is a technique to synchronize the clocks of multiple machines in a network.
+
+It works without relying on an external accurate time source.
+
+One machine acts as a leader (server) and polls others for their clock times.
+
+The leader calculates the average time and sends adjustments to all machines.
+
+All machines, including the leader, adjust their clocks.
+
+How Berkeley Algorithm Works (Summary)
+
+Server asks each client their current clock time.
+
+Clients send their clock times to the server.
+
+Server calculates the average time.
+
+Server calculates the adjustment needed for each machine.
+
+Server sends the adjustment to each client.
+
+Each machine updates its clock accordingly.
+
+Explanation of the Code Line by Line
+
+Server.java
+
+ServerSocket ss = new ServerSocket(5000);
+
+Creates a server socket that listens on port 5000.
+
+System.out.println("Server started...");
+
+Displays that the server is ready.
+
+Socket s = ss.accept();
+
+Server waits and accepts a connection from a client.
+
+System.out.println("Client connected.");
+
+Displays when the client is connected.
+
+DataInputStream dis = new DataInputStream(s.getInputStream());
+DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+
+dis will be used to receive data from the client.
+
+dos will be used to send data to the client.
+
+Scanner sc = new Scanner(System.in);
+
+sc is used to take input from the server user.
+
+System.out.print("Enter Server Time (in seconds): ");
+int serverTime = sc.nextInt();
+
+User enters the server's current time manually.
+
+int clientTime = dis.readInt();
+
+Server reads the client's time sent over the network.
+
+System.out.println("Client Time: " + clientTime + " seconds");
+
+Displays the client's clock time.
+
+int averageTime = (serverTime + clientTime) / 2;
+
+Calculates the average of server and client times.
+
+System.out.println("Average Time: " + averageTime + " seconds");
+
+Displays the average time.
+
+int serverAdjustment = averageTime - serverTime;
+int clientAdjustment = averageTime - clientTime;
+
+Calculates how much the server and client clocks should be adjusted.
+
+System.out.println("Server Adjustment: " + serverAdjustment + " seconds");
+System.out.println("Client Adjustment: " + clientAdjustment + " seconds");
+
+Displays the amount of adjustment for both machines.
+
+dos.writeInt(clientAdjustment);
+
+Sends the client their adjustment value.
+
+serverTime += serverAdjustment;
+System.out.println("Synchronized Server Time: " + serverTime + " seconds");
+
+Updates and displays the server's new clock time.
+
+s.close();
+ss.close();
+
+Closes the connections.
+
+Client.java
+
+Socket s = new Socket("SERVER_IP", 5000);
+
+Connects to the server's IP address on port 5000.
+
+DataInputStream dis = new DataInputStream(s.getInputStream());
+DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+
+dis to receive data from server, dos to send data to server.
+
+Scanner sc = new Scanner(System.in);
+
+sc is used to take input from the client user.
+
+System.out.print("Enter Client Time (in seconds): ");
+int clientTime = sc.nextInt();
+
+User enters the client's current time manually.
+
+dos.writeInt(clientTime);
+
+Sends the client's time to the server.
+
+int adjustment = dis.readInt();
+
+Receives the adjustment value from the server.
+
+System.out.println("Adjustment received: " + adjustment + " seconds");
+
+Displays the adjustment value received.
+
+clientTime += adjustment;
+System.out.println("Synchronized Client Time: " + clientTime + " seconds");
+
+Updates and displays the client's new clock time.
+
+s.close();
+
+Closes the socket connection.
+
+Steps to Run the Code
+
+On Server Machine:
+
+Save code as Server.java.
+
+Compile using: javac Server.java
+
+Run using: java Server
+
+On Client Machine:
+
+Save code as Client.java.
+
+Change SERVER_IP to the server's actual IP address.
+
+Compile using: javac Client.java
+
+Run using: java Client
+
+Sample Output
+
+Server Console:
+
+Server started...
+Client connected.
+Enter Server Time (in seconds): 100
+Client Time: 80 seconds
+Average Time: 90 seconds
+Server Adjustment: -10 seconds
+Client Adjustment: 10 seconds
+Synchronized Server Time: 90 seconds
+
+Client Console:
+
+Enter Client Time (in seconds): 80
+Adjustment received: 10 seconds
+Synchronized Client Time: 90 seconds
+
+How the Output is Produced
+
+Server Time = 100 sec
+
+Client Time = 80 sec
+
+Average Time = (100 + 80) / 2 = 90 sec
+
+Server must adjust by -10 sec
+
+Client must adjust by +10 sec
+
+After adjustment:
+
+Server: 100 - 10 = 90 sec
+
+Client: 80 + 10 = 90 sec
+
+Clocks synchronized successfully.
+
+Conclusion
+
+Berkeley Algorithm helps synchronize clocks without any external time server.
+
+It adjusts each machine's clock based on the average time calculated.
+
+Simple, efficient, and effective for distributed systems.

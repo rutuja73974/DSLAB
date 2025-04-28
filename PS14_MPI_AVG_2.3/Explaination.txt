@@ -1,0 +1,93 @@
+
+
+This Java program uses MPI (Message Passing Interface) to perform distributed computation across multiple processes. Here, the operation performed is the calculation of a product of numbers, and the final output is the divided result (simulating an "average product").
+
+What is MPI?
+
+MPI stands for Message Passing Interface.
+
+It is a standardized and portable system that allows multiple processes to communicate with each other in parallel and distributed computing.
+
+MPI enables efficient parallel execution by sharing work among processes.
+
+Why do we use MPI in this program?
+
+To divide the workload (multiplying numbers) among multiple processes.
+
+Each process handles part of the total data independently.
+
+This reduces computation time and demonstrates key MPI concepts like Scatter, Gather, and parallel processing.
+
+Step-by-step Code Explanation:
+
+Import MPI Library:
+
+import mpi.*; — Imports necessary classes for MPI functionality.
+
+Class and Main Method Definition:
+
+public class SimpleDistributedAvg — Defines the main class.
+
+public static void main(String[] args) — The entry point of the program.
+
+MPI Initialization:
+
+MPI.Init(args); — Initializes the MPI environment.
+
+int rank = MPI.COMM_WORLD.Rank(); — Retrieves the unique ID (rank) of each process.
+
+int size = MPI.COMM_WORLD.Size(); — Retrieves the total number of processes.
+
+Variable Setup:
+
+unitSize = 5; — Each process will process 5 elements.
+
+sendBuffer = new int[unitSize * size]; — Array for all numbers to be divided among processes.
+
+recvBuffer = new int[unitSize]; — Array to hold the part received by each process.
+
+Data Initialization by Root Process:
+
+Root process (rank == 0) fills sendBuffer with consecutive integers starting from 1.
+
+Data Distribution:
+
+MPI.COMM_WORLD.Scatter(...) — Divides sendBuffer among all processes into their recvBuffer.
+
+Local Computation:
+
+Each process calculates the product of its recvBuffer elements.
+
+Stores the result in localProduct.
+
+Print Local Result:
+
+Each process prints its own local product.
+
+Gathering Local Products:
+
+MPI.COMM_WORLD.Gather(...) — Collects all local products at the root process into gatherBuffer.
+
+Final Computation at Root:
+
+Root process multiplies all gathered local products.
+
+Divides the final product by size to simulate an "average" and prints it.
+
+Finalize MPI:
+
+MPI.Finalize(); — Shuts down the MPI environment properly.
+
+Example Output:
+
+Suppose 4 processes, each gets 5 numbers.
+
+Each computes a local product.
+
+Root gathers and multiplies them, then divides by 4 (size).
+
+In short:
+
+MPI is used to distribute the product calculation task.
+
+Result: Parallel computation leading to faster processing.

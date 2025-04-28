@@ -1,0 +1,20 @@
+TERMINAL 1:
+
+idlj -fall Reverse.idl
+
+javac *.java ReverseModule/*.java
+
+
+
+TERMINAL 2:
+tnameserv -ORBInitialPort 1050
+
+TERMINAL3:
+java ReverseServer -ORBInitialPort 1050 -ORBInitialHost localhost
+
+TERMINAL4:
+java ReverseClient -ORBInitialPort 1050 -ORBInitialHost localhost
+
+
+
+

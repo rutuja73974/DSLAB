@@ -1,0 +1,73 @@
+
+SimpleDistributedSum.java - Detailed Step-by-Step Explanation:
+
+1. Import MPI Package:
+   - import mpi.*;
+   - This imports the MPJ Express library which provides the classes and methods needed for MPI operations.
+
+2. Main Function:
+   - public static void main(String[] args) { ... }
+   - This is where the program execution begins.
+
+3. Initialize MPI:
+   - MPI.Init(args);
+   - It initializes the MPI environment, preparing all the processes for communication.
+
+4. Identify Process Rank and Total Size:
+   - int rank = MPI.COMM_WORLD.Rank();
+   - int size = MPI.COMM_WORLD.Size();
+   - rank: The unique ID for each process (starting from 0).
+   - size: The total number of processes running.
+
+5. Define Unit Size and Buffers:
+   - int unitSize = 5;
+   - int[] sendBuffer = new int[unitSize * size];
+   - int[] recvBuffer = new int[unitSize];
+   - unitSize: Number of elements each process will handle.
+   - sendBuffer: Complete array created by the root process (process 0).
+   - recvBuffer: Sub-array each process receives after scattering.
+
+6. Root Process Initializes Data:
+   - Only if (rank == 0):
+   - Fill sendBuffer with numbers 1, 2, ..., unitSize*size.
+
+7. Scatter Operation:
+   - MPI.COMM_WORLD.Scatter(sendBuffer, 0, unitSize, MPI.INT,
+                             recvBuffer, 0, unitSize, MPI.INT, 0);
+   - sendBuffer is divided into chunks of unitSize and sent to each process.
+   - Every process, including root, gets its portion in recvBuffer.
+
+8. Each Process Computes Local Sum:
+   - int localSum = 0;
+   - for loop: Sum up the values inside recvBuffer.
+
+9. Each Process Prints Local Sum:
+   - System.out.println("Process " + rank + " local sum: " + localSum);
+   - Every process prints its computed sum.
+
+10. Reduce Operation:
+    - int[] finalSum = new int[1];
+    - MPI.COMM_WORLD.Reduce(new int[]{localSum}, 0, finalSum, 0, 1, MPI.INT, MPI.SUM, 0);
+    - All localSums from each process are gathered and summed up at the root process (rank 0).
+
+11. Root Process Displays Final Sum:
+    - if (rank == 0):
+    - System.out.println("Final sum: " + finalSum[0]);
+    - Only the root process prints the total sum.
+
+12. Finalize MPI:
+    - MPI.Finalize();
+    - Properly shuts down the MPI environment.
+
+Expected Working Example:
+- If size = 4 and unitSize = 5
+- Total elements = 20 (1 to 20)
+- Processes receive:
+  - Process 0: 1,2,3,4,5 → sum = 15
+  - Process 1: 6,7,8,9,10 → sum = 40
+  - Process 2: 11,12,13,14,15 → sum = 65
+  - Process 3: 16,17,18,19,20 → sum = 90
+- Final sum = 15+40+65+90 = 210
+
+Summary:
+- The program demonstrates how to divide work among processes (Scatter), compute partial results, and aggregate them (Reduce) using MPI in Java.
