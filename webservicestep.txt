@@ -1,0 +1,107 @@
+File -> new project
+         |
+         java web ->web application
+project name:Ass7
+server:Glassfish
+java EE 7 web
+
+
+ass7->right click
+       |
+      new->web service
+web service name:MyCalc
+package:com.myservice
+
+(cut code)
+--------------------------
+
+click->web service->right click
+                     |
+                     MyCalc->add operation
+
+
+>OPERATON
+NAME:addition
+return type:double
+click add
+num1 double ;;;;;for num2 same
+click ok
+
+another way
+Design
+|
+add operation........
+
+
+GO TO SOURCE CODE
+in add function-- in place of return 0.0---do return num1+num2;
+
+ass7->right click->build
+if o/p not display 
+  click window->output
+
+ass7->right click->deploy
+
+MyCalc->right click->test web service->(give input to test it work right)
+
+-----------------------------------------------
+ass7->file->new project->CalculatorWebServiceClient-----remain setting as it is 
+|
+index.htmi ->open to create form
+
+window->IDE tool->Palette
+                   |
+                 action->CalculatorServlet(op will display on this page)
+<form>
+  <Enter number1:<input type="text" name="number1"/>
+</form>
+
+----------------------
+right click->CalculatorWebServiceClient->new->select web service client 
+project:browse ----CalculatorWebServer ----OK
+package--default
+finish
+
+this will create webservicereference folder
+----------------------------------------------
+right click->CalculatorWebServiceClient->new->servlet
+class name:CalculatorServlet(keep name same as in form )
+check box click
+finish
+-------------------------------------
+
+webserviceReference
+   myCalc
+     myClc
+       > addition
+       > subtraction 
+
+drag and drop (addition,subtracton) below HTTP Servlet method 
+
+add code above(out.println<!DOCTYPE HTML>
+  double num1,num2;
+  num1=Double.parseDouble(request.getParameter("number1"));
+  ---
+
+out.println(body)
+{
+out.println("<h1>Addition is: " + addition(num1,num2)+"</h1>");
+--
+}
+
+--------------------------------------------------------------
+CalculatorWebServiceClient -> right click -> clean & build 
+
+--------------------------------------------------
+CalculatorWebServiceClient
+  web pages
+    index.html
+      click on form-> run file 
+              give input -> submit
+---------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------
+
+FOR SIMPLE INTREST
+simpleInterest = (principal * rate * time) / 100;
+
+---------------------------------------------------
